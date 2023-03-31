@@ -1,5 +1,7 @@
 package com.ap.todo.domain.aggregates;
 
+import com.ap.todo.constant.Importance;
+import com.ap.todo.constant.TodoStatus;
 import com.ap.todo.domain.entities.Manager;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,8 +23,11 @@ public class Todo {
     // 실행 날짜
     private LocalDateTime executionDate;
 
-    // 우선 순위
-    private Object priority;
+    // 중요도
+    private Importance priority;
+
+    // 순서
+    private int sequence;
 
     // 업무 제목
     private String task;
@@ -31,6 +36,6 @@ public class Todo {
     private String description;
 
     // 상태
-    private Object status;
+    private TodoStatus status;
 
 }
