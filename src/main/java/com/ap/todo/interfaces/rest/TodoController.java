@@ -1,6 +1,6 @@
 package com.ap.todo.interfaces.rest;
 
-import com.ap.todo.interfaces.dto.CreateOrderReqDto;
+import com.ap.todo.interfaces.dto.CreateTodoReqDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import static com.ap.todo.constant.TodoApiUrl.*;
 public class TodoController extends BaseController{
 
     @PostMapping(CREATE_TODO_URL)
-    public ResponseEntity<Object> createTodo(CreateOrderReqDto reqDto) {
+    public ResponseEntity<Object> createTodo(CreateTodoReqDto reqDto) {
 
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }
