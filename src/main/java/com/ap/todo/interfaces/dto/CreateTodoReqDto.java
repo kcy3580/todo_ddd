@@ -10,12 +10,15 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class CreateTodoReqDto {
 
+    // 업무 제목
     @NotBlank
     private String task;
 
+    // 담당자 Id
     @NotNull
     private String managerId;
 
+    // 업무 설명
     private String description;
 
 }

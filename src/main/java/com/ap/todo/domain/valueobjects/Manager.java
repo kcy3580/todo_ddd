@@ -1,4 +1,4 @@
-package com.ap.todo.domain.entities;
+package com.ap.todo.domain.valueobjects;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -10,9 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 public class Manager {
 
     // 담당자 Id
-    private long id;
+    private String id;
 
     // 이름
     private String name;
+
+    public Manager(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
 }

@@ -2,12 +2,16 @@ package com.ap.todo.domain.aggregates;
 
 import com.ap.todo.constant.Importance;
 import com.ap.todo.constant.TodoStatus;
-import com.ap.todo.domain.entities.Manager;
+import com.ap.todo.domain.commands.CreateTodoCommand;
+import com.ap.todo.domain.valueobjects.Manager;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 
 @Getter
 @Slf4j
@@ -37,5 +41,17 @@ public class Todo {
 
     // 상태
     private TodoStatus status;
+
+    public Todo(CreateTodoCommand command, Manager manager) {
+        this.manager = manager;
+        this.executionDate = command.getExecutionDate();
+        this.task = command.getTask();
+        this.description = command.getDescription();
+        this.status = TodoStatus.PROGRESS;
+    }
+
+    public void applyPriority() {
+
+    }
 
 }
