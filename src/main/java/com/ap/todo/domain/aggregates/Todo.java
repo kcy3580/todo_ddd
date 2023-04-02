@@ -4,16 +4,17 @@ import com.ap.todo.constant.Importance;
 import com.ap.todo.constant.TodoStatus;
 import com.ap.todo.domain.commands.CreateTodoCommand;
 import com.ap.todo.domain.valueobjects.Manager;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @Slf4j
 @ToString
 public class Todo {

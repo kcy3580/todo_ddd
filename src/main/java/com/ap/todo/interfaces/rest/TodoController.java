@@ -2,9 +2,11 @@ package com.ap.todo.interfaces.rest;
 
 import com.ap.todo.application.commandservices.TodoCommandService;
 import com.ap.todo.application.outboundservices.ManagerOutboundService;
+import com.ap.todo.domain.aggregates.Todo;
 import com.ap.todo.domain.commands.CreateTodoCommand;
 import com.ap.todo.domain.valueobjects.Manager;
 import com.ap.todo.interfaces.dto.CreateTodoReqDto;
+import com.ap.todo.interfaces.dto.CreateTodoRspDto;
 import com.ap.todo.interfaces.dto.FindMangerInfoRspDto;
 import com.ap.todo.interfaces.mapper.CreateTodoMapper;
 import com.ap.todo.interfaces.mapper.FindManagerInfoListMapper;
@@ -38,8 +40,9 @@ public class TodoController extends BaseController{
     @PostMapping(CREATE_TODO_URL)
     public ResponseEntity<Object> createTodo(CreateTodoReqDto reqDto) {
         CreateTodoCommand command = createTodoMapper.toCommand(reqDto);
-        todoCommandService.create(command);
-        return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
+        Todo todo = todoCommandService.create(command);
+        CreateTodoRspDto rspDto = createTodoMapper.toResponseDto(todo);
+        return new ResponseEntity<>(rspDto, getSuccessHeaders(), HttpStatus.OK);
     }
 
     @GetMapping(FIND_TODO_URL)
@@ -51,8 +54,8 @@ public class TodoController extends BaseController{
     @GetMapping(FIND_MANAGER_INFO_LIST_URL)
     public ResponseEntity<List<FindMangerInfoRspDto>> findMangerInfoList() {
         List<Manager> managerInfoList = managerOutboundService.findManagerInfoList();
-        List<FindMangerInfoRspDto> mangerInfoRspDtoList = findManagerInfoListMapper.toListResponseDto(managerInfoList);
-        return new ResponseEntity<>(mangerInfoRspDtoList, getSuccessHeaders(), HttpStatus.OK);
+        List<FindMangerInfoRspDto> rspDtoList = findManagerInfoListMapper.toListResponseDto(managerInfoList);
+        return new ResponseEntity<>(rspDtoList, getSuccessHeaders(), HttpStatus.OK);
     }
 
     @PatchMapping(CHANGE_TODO_URL)

@@ -4,7 +4,11 @@ import com.ap.common.constants.ResultCode;
 import com.ap.common.exception.ApiException;
 import com.ap.todo.application.commandservices.TodoCommandService;
 import com.ap.todo.application.outboundservices.ManagerOutboundService;
+import com.ap.todo.domain.aggregates.Todo;
+import com.ap.todo.domain.commands.CreateTodoCommand;
 import com.ap.todo.domain.valueobjects.Manager;
+import com.ap.todo.interfaces.dto.CreateTodoReqDto;
+import com.ap.todo.interfaces.dto.CreateTodoRspDto;
 import com.ap.todo.interfaces.dto.FindMangerInfoRspDto;
 import com.ap.todo.interfaces.mapper.CreateTodoMapper;
 import com.ap.todo.interfaces.mapper.FindManagerInfoListMapper;
@@ -18,18 +22,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.ap.common.constants.StaticValues.RESULT_CODE;
 import static com.ap.common.constants.StaticValues.RESULT_MESSAGE;
-import static com.ap.todo.constant.TodoApiUrl.FIND_MANAGER_INFO_LIST_URL;
-import static com.ap.todo.constant.TodoApiUrl.TODO_BASE_URL;
+import static com.ap.todo.constant.TodoApiUrl.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TodoController.class)
 class TodoControllerTest {
@@ -53,7 +58,49 @@ class TodoControllerTest {
     private FindManagerInfoListMapper findManagerInfoListMapper;
 
     @Test
-    void createTodo() {
+    @DisplayName("To-Do를 성공적으로 생성했다.")
+    void createTodo_success() throws Exception {
+        //given
+        CreateTodoReqDto reqDto = CreateTodoReqDto.builder()
+                .task("할일 1")
+                .managerId("manager1")
+                .executionDate("20230331123000")
+                .description("이것은 할일 1 입니다.")
+                .build();
+
+        CreateTodoCommand command = CreateTodoCommand.builder()
+                .task(reqDto.getTask())
+                .managerId(reqDto.getManagerId())
+                .executionDate(LocalDateTime.parse(reqDto.getExecutionDate(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .description(reqDto.getDescription())
+                .build();
+        given(createTodoMapper.toCommand(any())).willReturn(command);
+
+        Todo todo = Todo.builder()
+                .todoId(1L)
+                .task(command.getTask())
+                .manager(new Manager(command.getManagerId(), "testerName"))
+                .executionDate(command.getExecutionDate())
+                .description(command.getDescription())
+                .build();
+        given(todoCommandService.create(any())).willReturn(todo);
+
+        CreateTodoRspDto rspDto = CreateTodoRspDto.builder()
+                .todoId(todo.getTodoId())
+                .task(todo.getTask())
+                .description(todo.getDescription())
+                .build();
+        given(createTodoMapper.toResponseDto(any())).willReturn(rspDto);
+
+        //when, then
+        mockMvc.perform(SessionHeaderMockMvcFactory.post(TODO_BASE_URL + CREATE_TODO_URL))
+                .andDo(print())
+                .andExpect(jsonPath("$.todoId").value(rspDto.getTodoId()))
+                .andExpect(jsonPath("$.task").value(rspDto.getTask()))
+                .andExpect(jsonPath("$.description").value(rspDto.getDescription()))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(header().stringValues(RESULT_CODE, ResultCode.SUCCESS.getCode()))
+                .andExpect(header().stringValues(RESULT_MESSAGE, ResultCode.SUCCESS.getUrlEncodingMessage()));
     }
 
     @Test

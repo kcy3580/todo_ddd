@@ -21,7 +21,7 @@ public class TodoCommandService {
     private final ManagerOutboundService managerOutboundService;
     private final TodoRepository todoRepository;
 
-    public void create(CreateTodoCommand command) {
+    public Todo create(CreateTodoCommand command) {
         String managerId = command.getManagerId();
         // 해당 담당자의 to-do 조회
         List<Todo> todoList = todoQueryService.findTodoList(managerId);
@@ -32,6 +32,8 @@ public class TodoCommandService {
         todo.applyPriority();
 
         todoRepository.save(todo);
+
+        return todo;
     }
 
 }

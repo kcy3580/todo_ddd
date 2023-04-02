@@ -9,7 +9,6 @@ import lombok.Getter;
 @Builder
 public class FindMangerInfoRspDto {
 
-
     // 담당자 Id
     private String id;
 
