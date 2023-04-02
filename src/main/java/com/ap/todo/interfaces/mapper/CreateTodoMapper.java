@@ -13,6 +13,7 @@ public abstract class CreateTodoMapper {
 
     @Mapping(target = "task", source = "reqDto.task")
     @Mapping(target = "managerId", source = "reqDto.managerId")
+    @Mapping(target = "executionDate", source = "reqDto.executionDate")
     @Mapping(target = "description", source = "reqDto.description")
     public abstract CreateTodoCommand toCommand(CreateTodoReqDto reqDto);
 

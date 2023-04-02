@@ -1,4 +1,4 @@
-package com.ap.todo.infrastructure.rest;
+package com.ap.todo.interfaces.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class FindManagerInfoDto {
+public class FindMangerInfoRspDto {
+
 
     // 담당자 Id
     private String id;

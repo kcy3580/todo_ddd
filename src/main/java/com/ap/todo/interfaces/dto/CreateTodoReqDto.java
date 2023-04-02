@@ -18,6 +18,9 @@ public class CreateTodoReqDto {
     @NotNull
     private String managerId;
 
+    // 실행 날짜
+    private String executionDate;
+
     // 업무 설명
     private String description;
 

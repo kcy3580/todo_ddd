@@ -26,7 +26,7 @@ public class TodoCommandService {
         // 해당 담당자의 to-do 조회
         List<Todo> todoList = todoQueryService.findTodoList(managerId);
         // 담당자 정보 조회
-        Manager manager = managerOutboundService.findInfo(managerId);
+        Manager manager = managerOutboundService.findManagerInfo(managerId);
         // To-Do 기본값 설정 후 우선 순위 적용
         Todo todo = new Todo(command, manager);
         todo.applyPriority();
