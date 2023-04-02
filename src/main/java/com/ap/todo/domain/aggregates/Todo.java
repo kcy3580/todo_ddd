@@ -1,9 +1,9 @@
 package com.ap.todo.domain.aggregates;
 
-import com.ap.todo.constant.Importance;
 import com.ap.todo.constant.TodoStatus;
 import com.ap.todo.domain.commands.CreateTodoCommand;
 import com.ap.todo.domain.valueobjects.Manager;
+import com.ap.todo.domain.valueobjects.Priority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,11 +28,8 @@ public class Todo {
     // 실행 날짜
     private LocalDateTime executionDate;
 
-    // 중요도
-    private Importance priority;
-
-    // 순서
-    private int sequence;
+    // 우선순위
+    private Priority priority;
 
     // 업무 제목
     private String task;
@@ -43,16 +40,23 @@ public class Todo {
     // 상태
     private TodoStatus status;
 
-    public Todo(CreateTodoCommand command, Manager manager) {
+    public Todo(Long todoId, CreateTodoCommand command, Manager manager, Priority priority) {
+        this.todoId = todoId;
         this.manager = manager;
         this.executionDate = command.getExecutionDate();
+        this.priority = priority;
         this.task = command.getTask();
         this.description = command.getDescription();
         this.status = TodoStatus.PROGRESS;
     }
 
-    public void applyPriority() {
+    public boolean isSameExecutionDate(LocalDateTime executionDate) {
+        String stringDate = executionDate.getYear() + String.valueOf(executionDate.getMonth().getValue()) + executionDate.getDayOfMonth();
+        return this.getExecutionDateToStringDate().equals(stringDate);
+    }
 
+    private String getExecutionDateToStringDate() {
+        return this.executionDate.getYear() + String.valueOf(this.executionDate.getMonth().getValue()) + this.executionDate.getDayOfMonth();
     }
 
 }

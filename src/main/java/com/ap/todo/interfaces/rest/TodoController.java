@@ -38,7 +38,7 @@ public class TodoController extends BaseController{
      * @param reqDto    생성요청 Dto
      * */
     @PostMapping(CREATE_TODO_URL)
-    public ResponseEntity<Object> createTodo(CreateTodoReqDto reqDto) {
+    public ResponseEntity<Object> createTodo(@RequestBody CreateTodoReqDto reqDto) {
         CreateTodoCommand command = createTodoMapper.toCommand(reqDto);
         Todo todo = todoCommandService.create(command);
         CreateTodoRspDto rspDto = createTodoMapper.toResponseDto(todo);

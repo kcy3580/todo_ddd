@@ -28,7 +28,7 @@ public abstract class CreateTodoMapper {
     protected void afterMappingToCommand(
             @MappingTarget final CreateTodoCommand.CreateTodoCommandBuilder<?,?> targetBuilder,
             CreateTodoReqDto reqDto) {
-        LocalDateTime convertedExecutionDate = LocalDateTime.parse(reqDto.getExecutionDate(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDateTime convertedExecutionDate = LocalDateTime.parse(reqDto.getExecutionDate(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         targetBuilder.executionDate(convertedExecutionDate);
     }
 

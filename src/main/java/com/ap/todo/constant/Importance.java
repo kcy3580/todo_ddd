@@ -13,11 +13,11 @@ public enum Importance {
     ;
 
     private final String code;
-    private final Integer priority;
+    private final Integer importanceSeq;
 
-    Importance(String code, Integer priority) {
+    Importance(String code, Integer importanceSeq) {
         this.code = code;
-        this.priority = priority;
+        this.importanceSeq = importanceSeq;
     }
 
 }
