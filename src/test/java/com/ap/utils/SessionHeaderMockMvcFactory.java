@@ -16,6 +16,13 @@ public class SessionHeaderMockMvcFactory {
     public static MockHttpServletRequestBuilder get(String url, Object... uriVars) {
         return MockMvcRequestBuilders.get(url, uriVars)
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("manager-id", "tester");
+    }
+
+    public static MockHttpServletRequestBuilder getForNoManagerId(String url, Object... uriVars) {
+        return MockMvcRequestBuilders.get(url, uriVars)
+                .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
     }
 

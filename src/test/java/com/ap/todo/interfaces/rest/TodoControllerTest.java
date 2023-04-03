@@ -6,12 +6,15 @@ import com.ap.todo.application.commandservices.TodoCommandService;
 import com.ap.todo.application.outboundservices.ManagerOutboundService;
 import com.ap.todo.domain.aggregates.Todo;
 import com.ap.todo.domain.commands.CreateTodoCommand;
+import com.ap.todo.domain.queries.FindTodoQuery;
 import com.ap.todo.domain.valueobjects.Manager;
 import com.ap.todo.interfaces.dto.CreateTodoReqDto;
 import com.ap.todo.interfaces.dto.CreateTodoRspDto;
 import com.ap.todo.interfaces.dto.FindMangerInfoRspDto;
+import com.ap.todo.interfaces.dto.FindTodoRspDto;
 import com.ap.todo.interfaces.mapper.CreateTodoMapper;
 import com.ap.todo.interfaces.mapper.FindManagerInfoListMapper;
+import com.ap.todo.interfaces.mapper.FindTodoMapper;
 import com.ap.utils.SessionHeaderMockMvcFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.spi.mapper.MappingException;
@@ -30,8 +33,7 @@ import java.util.List;
 import static com.ap.common.constants.StaticValues.RESULT_CODE;
 import static com.ap.common.constants.StaticValues.RESULT_MESSAGE;
 import static com.ap.todo.constant.TodoApiUrl.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,6 +55,9 @@ class TodoControllerTest {
 
     @MockBean
     private CreateTodoMapper createTodoMapper;
+
+    @MockBean
+    private FindTodoMapper findTodoMapper;
 
     @MockBean
     private FindManagerInfoListMapper findManagerInfoListMapper;
@@ -104,7 +109,46 @@ class TodoControllerTest {
     }
 
     @Test
-    void findTodo() {
+    @DisplayName("담당자 ID와 실행날짜 기준으로 To-Do 목록조회에 성공했다.")
+    void findTodo_success() throws Exception {
+        //given
+        FindTodoQuery query = FindTodoQuery.builder()
+                .managerId("testerId")
+                .executionDate(LocalDateTime.now())
+                .build();
+        given(findTodoMapper.toQuery(anyString(), anyString())).willReturn(query);
+
+        List<Todo> todoList = new ArrayList<>();
+        Todo todo = Todo.builder()
+                .todoId(1L)
+                .build();
+        todoList.add(todo);
+        given(todoCommandService.findByManagerIdAndExecutionDate(any())).willReturn(todoList);
+
+        List<FindTodoRspDto> rspDtoList = new ArrayList<>();
+        FindTodoRspDto rspDto = FindTodoRspDto.builder()
+                .todoId(todo.getTodoId())
+                .build();
+        rspDtoList.add(rspDto);
+        given(findTodoMapper.toResponseDtoList(anyList())).willReturn(rspDtoList);
+
+        //when, then
+        mockMvc.perform(SessionHeaderMockMvcFactory.get(TODO_BASE_URL + FIND_TODO_URL.concat("?executionDate=" + "20230331123000")))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(objectMapper.writeValueAsString(rspDtoList)))
+                .andExpect(header().stringValues(RESULT_CODE, ResultCode.SUCCESS.getCode()))
+                .andExpect(header().stringValues(RESULT_MESSAGE, ResultCode.SUCCESS.getUrlEncodingMessage()));
+    }
+
+    @Test
+    @DisplayName("담당자 ID가 헤더에 존재하지 않아 오류가 발생했다.")
+    void findTodo_no_managerid_fail() throws Exception {
+        //given
+        //when, then
+        mockMvc.perform(SessionHeaderMockMvcFactory.getForNoManagerId(TODO_BASE_URL + FIND_TODO_URL.concat("?executionDate=" + "20230331123000")))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

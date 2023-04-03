@@ -55,6 +55,10 @@ public class Todo {
         return this.getExecutionDateToStringDate().equals(stringDate);
     }
 
+    public boolean isSameManager(String managerId) {
+        return this.getManager().getId().equals(managerId);
+    }
+
     private String getExecutionDateToStringDate() {
         return this.executionDate.getYear() + String.valueOf(this.executionDate.getMonth().getValue()) + this.executionDate.getDayOfMonth();
     }

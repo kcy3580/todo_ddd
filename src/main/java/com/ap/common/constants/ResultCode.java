@@ -15,6 +15,7 @@ public enum ResultCode {
     /** 공통 */
     SUCCESS("0000","정상", HttpStatus.OK),
     NO_DATA("0001","데이터가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    INVALID_PARAMETER("0002","파라미터가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
     SERVER_ERROR("9999","서버에러가 발생했습니다. 잠시 후 다시 요청해주세요", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
     private final String code;

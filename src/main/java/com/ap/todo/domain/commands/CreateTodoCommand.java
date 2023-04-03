@@ -1,12 +1,12 @@
 package com.ap.todo.domain.commands;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Getter
-@SuperBuilder
+@Builder
 public class CreateTodoCommand {
 
     // 업무 제목
