@@ -1,11 +1,3 @@
-/*
- * You are strictly prohibited to copy, disclose, distribute, modify, or use this program in part
- * or as a whole without the prior written consent of Starbucks Coffee Company.
- * Starbucks Coffee Company owns the intellectual property rights in and to this program.
- *
- * (Copyright (c) 2022 Starbucks Coffee Company. All Rights Reserved | Confidential)
- */
-
 package com.ap.common.exception;
 
 import com.ap.common.constants.ResultCode;
@@ -18,14 +10,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 
-import static com.ap.common.constants.ResultCode.INVALID_PARAMETER;
 import static com.ap.common.constants.StaticValues.RESULT_CODE;
 import static com.ap.common.constants.StaticValues.RESULT_MESSAGE;
 
