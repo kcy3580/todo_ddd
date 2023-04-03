@@ -30,4 +30,11 @@ public class TodoQueryService {
         return todoRepository.findTodoListByManagerIdAndExecutionDate(managerId, executionDate);
     }
 
+    /**
+     * To-Do Id 기준으로 정보를 가져온다.
+     * */
+    public Todo findById(String todoId) {
+        return todoRepository.findById(todoId);
+    }
+
 }

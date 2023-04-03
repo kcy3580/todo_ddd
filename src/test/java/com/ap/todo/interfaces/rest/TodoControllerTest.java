@@ -6,15 +6,14 @@ import com.ap.todo.application.commandservices.TodoCommandService;
 import com.ap.todo.application.outboundservices.ManagerOutboundService;
 import com.ap.todo.domain.aggregates.Todo;
 import com.ap.todo.domain.commands.CreateTodoCommand;
+import com.ap.todo.domain.commands.UpdateTodoCommand;
 import com.ap.todo.domain.queries.FindTodoQuery;
 import com.ap.todo.domain.valueobjects.Manager;
-import com.ap.todo.interfaces.dto.CreateTodoReqDto;
-import com.ap.todo.interfaces.dto.CreateTodoRspDto;
-import com.ap.todo.interfaces.dto.FindMangerInfoRspDto;
-import com.ap.todo.interfaces.dto.FindTodoRspDto;
+import com.ap.todo.interfaces.dto.*;
 import com.ap.todo.interfaces.mapper.CreateTodoMapper;
 import com.ap.todo.interfaces.mapper.FindManagerInfoListMapper;
 import com.ap.todo.interfaces.mapper.FindTodoMapper;
+import com.ap.todo.interfaces.mapper.UpdateTodoMapper;
 import com.ap.utils.SessionHeaderMockMvcFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.spi.mapper.MappingException;
@@ -35,6 +34,7 @@ import static com.ap.common.constants.StaticValues.RESULT_MESSAGE;
 import static com.ap.todo.constant.TodoApiUrl.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -61,6 +61,9 @@ class TodoControllerTest {
 
     @MockBean
     private FindManagerInfoListMapper findManagerInfoListMapper;
+
+    @MockBean
+    private UpdateTodoMapper updateTodoMapper;
 
     @Test
     @DisplayName("To-Do를 성공적으로 생성했다.")
@@ -98,7 +101,8 @@ class TodoControllerTest {
         given(createTodoMapper.toResponseDto(any())).willReturn(rspDto);
 
         //when, then
-        mockMvc.perform(SessionHeaderMockMvcFactory.post(TODO_BASE_URL + CREATE_TODO_URL))
+        mockMvc.perform(SessionHeaderMockMvcFactory.post(TODO_BASE_URL + CREATE_TODO_URL)
+                .content(objectMapper.writeValueAsString(reqDto)))
                 .andDo(print())
                 .andExpect(jsonPath("$.todoId").value(rspDto.getTodoId()))
                 .andExpect(jsonPath("$.task").value(rspDto.getTask()))
@@ -213,10 +217,38 @@ class TodoControllerTest {
     }
 
     @Test
-    void changeTodo() {
+    @DisplayName("To-Do를 업데이트한다.")
+    void changeTodo() throws Exception {
+        // given
+        UpdateTodoReqDto reqDto = UpdateTodoReqDto.builder()
+                .todoId("todoId")
+                .build();
+        UpdateTodoCommand command = UpdateTodoCommand.builder()
+                .todoId(reqDto.getTodoId())
+                .build();
+        given(updateTodoMapper.toCommand(any())).willReturn(command);
+        doNothing().when(todoCommandService).updateInfo(any());
+
+        //when, then
+        mockMvc.perform(SessionHeaderMockMvcFactory.patch(TODO_BASE_URL + UPDATE_TODO_URL)
+                        .content(objectMapper.writeValueAsString(reqDto)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(header().stringValues(RESULT_CODE, ResultCode.SUCCESS.getCode()))
+                .andExpect(header().stringValues(RESULT_MESSAGE, ResultCode.SUCCESS.getUrlEncodingMessage()));
     }
 
     @Test
-    void deleteTodo() {
+    @DisplayName("To-Do를 삭제한다.")
+    void deleteTodo() throws Exception {
+        //given
+        doNothing().when(todoCommandService).deleteByTodoId(anyString());
+        //when, then
+        mockMvc.perform(SessionHeaderMockMvcFactory.delete(TODO_BASE_URL + DELETE_TODO_URL, "1"))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(header().stringValues(RESULT_CODE, ResultCode.SUCCESS.getCode()))
+                .andExpect(header().stringValues(RESULT_MESSAGE, ResultCode.SUCCESS.getUrlEncodingMessage()));
     }
+
 }

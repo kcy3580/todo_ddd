@@ -26,8 +26,14 @@ public class SessionHeaderMockMvcFactory {
                 .accept(MediaType.APPLICATION_JSON);
     }
 
-    public static MockHttpServletRequestBuilder put(String url, Object... uriVars) {
-        return MockMvcRequestBuilders.put(url, uriVars)
+    public static MockHttpServletRequestBuilder patch(String url, Object... uriVars) {
+        return MockMvcRequestBuilders.patch(url, uriVars)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+    }
+
+    public static MockHttpServletRequestBuilder delete(String url, Object... uriVars) {
+        return MockMvcRequestBuilders.delete(url, uriVars)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
     }

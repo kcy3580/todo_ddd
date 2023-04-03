@@ -43,6 +43,13 @@ public abstract class FindTodoMapper {
     @Mapping(target = "status", source = "todo.status")
     public abstract FindTodoRspDto toFindTodoResponseDto(Todo todo);
 
+    @AfterMapping
+    protected void afterMappingToResponseDto(
+            @MappingTarget final FindTodoRspDto.FindTodoRspDtoBuilder targetBuilder,
+            Todo todo) {
+        targetBuilder.executionDate(todo.getExecutionDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+    }
+
     @Mapping(target = "id", source = "manager.id")
     @Mapping(target = "name", source = "manager.name")
     public abstract ManagerDtoForFindTodo toManagerDtoForFindTodo(Manager manager);
@@ -50,4 +57,11 @@ public abstract class FindTodoMapper {
     @Mapping(target = "importance", ignore = true)
     @Mapping(target = "sequence", source = "priority.sequence")
     public abstract PriorityDtoForFindTodo toPriorityDtoForFindTodo(Priority priority);
+
+    @AfterMapping
+    protected void afterMappingToPriorityDtoForFindTodo(
+            @MappingTarget final PriorityDtoForFindTodo.PriorityDtoForFindTodoBuilder targetBuilder,
+            Priority priority) {
+        targetBuilder.importance(priority.getImportance().getCode());
+    }
 }

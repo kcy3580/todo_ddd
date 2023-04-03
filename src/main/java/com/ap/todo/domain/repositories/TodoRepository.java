@@ -9,6 +9,9 @@ public interface TodoRepository {
 
     List<Todo> findByManagerId(String managerId);
     List<Todo> findTodoListByManagerIdAndExecutionDate(String managerId, LocalDateTime executionDate);
+    Todo findById(String todoId);
     void save(Todo todo);
+    void saveAll(List<Todo> todoList);
+    void deleteById(String todoId);
 
 }

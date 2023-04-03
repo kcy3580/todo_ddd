@@ -17,9 +17,9 @@ public class TodoApiUrl {
     public static final String FIND_MANAGER_INFO_LIST_URL = "/managers/list";
 
     /** To-Do 변경 */
-    public static final String CHANGE_TODO_URL = "/todos";
+    public static final String UPDATE_TODO_URL = "/todos";
 
     /** To-Do 삭제 */
-    public static final String DELETE_TODO_URL = "/todos";
+    public static final String DELETE_TODO_URL = "/todos/{todoId}";
 
 }

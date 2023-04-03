@@ -3,13 +3,12 @@ package com.ap.todo.interfaces.rest;
 import com.ap.todo.application.commandservices.TodoCommandService;
 import com.ap.todo.application.outboundservices.ManagerOutboundService;
 import com.ap.todo.domain.aggregates.Todo;
+import com.ap.todo.domain.commands.UpdateTodoCommand;
 import com.ap.todo.domain.commands.CreateTodoCommand;
 import com.ap.todo.domain.queries.FindTodoQuery;
 import com.ap.todo.domain.valueobjects.Manager;
-import com.ap.todo.interfaces.dto.CreateTodoReqDto;
-import com.ap.todo.interfaces.dto.CreateTodoRspDto;
-import com.ap.todo.interfaces.dto.FindMangerInfoRspDto;
-import com.ap.todo.interfaces.dto.FindTodoRspDto;
+import com.ap.todo.interfaces.dto.*;
+import com.ap.todo.interfaces.mapper.UpdateTodoMapper;
 import com.ap.todo.interfaces.mapper.CreateTodoMapper;
 import com.ap.todo.interfaces.mapper.FindManagerInfoListMapper;
 import com.ap.todo.interfaces.mapper.FindTodoMapper;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -39,13 +39,14 @@ public class TodoController extends BaseController{
     private final CreateTodoMapper createTodoMapper;
     private final FindTodoMapper findTodoMapper;
     private final FindManagerInfoListMapper findManagerInfoListMapper;
+    private final UpdateTodoMapper updateTodoMapper;
 
     /**
      * To-Do를 생성한다.
      * @param reqDto    생성요청 Dto
      * */
     @PostMapping(CREATE_TODO_URL)
-    public ResponseEntity<Object> createTodo(@RequestBody CreateTodoReqDto reqDto) {
+    public ResponseEntity<Object> createTodo(@RequestBody @Valid CreateTodoReqDto reqDto) {
         CreateTodoCommand command = createTodoMapper.toCommand(reqDto);
         Todo todo = todoCommandService.create(command);
         CreateTodoRspDto rspDto = createTodoMapper.toResponseDto(todo);
@@ -76,15 +77,24 @@ public class TodoController extends BaseController{
         return new ResponseEntity<>(rspDtoList, getSuccessHeaders(), HttpStatus.OK);
     }
 
-    @PatchMapping(CHANGE_TODO_URL)
-    public ResponseEntity<Object> changeTodo() {
-
+    /**
+     * To-Do 내용을 변경한다.
+     * @param reqDto    변경요청 Dto
+     * */
+    @PatchMapping(UPDATE_TODO_URL)
+    public ResponseEntity<Object> changeTodo(@RequestBody @Valid UpdateTodoReqDto reqDto) {
+        UpdateTodoCommand command = updateTodoMapper.toCommand(reqDto);
+        todoCommandService.updateInfo(command);
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }
 
+    /**
+     * To-Do를 삭제한다.
+     * @param todoId    To-Do 식별 값
+     * */
     @DeleteMapping(DELETE_TODO_URL)
-    public ResponseEntity<Object> deleteTodo() {
-
+    public ResponseEntity<Object> deleteTodo(@PathVariable(name = "todoId") String todoId) {
+        todoCommandService.deleteByTodoId(todoId);
         return new ResponseEntity<>(getSuccessHeaders(), HttpStatus.OK);
     }
 

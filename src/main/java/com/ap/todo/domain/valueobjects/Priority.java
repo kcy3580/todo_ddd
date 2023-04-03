@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Slf4j
 @ToString
 @Builder
-public class Priority implements Comparable<Priority> {
+public class Priority implements Comparable<Priority>, Serializable {
 
     // 중요도
     private Importance importance;
