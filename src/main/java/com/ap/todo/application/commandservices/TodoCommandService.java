@@ -73,31 +73,35 @@ public class TodoCommandService {
      * @param command   변경 command
      * */
     public void updateInfo(UpdateTodoCommand command) {
-        List<Todo> updatingTargetList = new ArrayList<>();
-        Todo todo = todoQueryService.findById(command.getTodoId());
+        try {
+            List<Todo> updatingTargetList = new ArrayList<>();
+            Todo todo = todoQueryService.findById(command.getTodoId());
 
-        // 담당자 위임 정보 존재 시 담당자 조회 후 위임을 진행한다.(description에 위임 정보를 기록한다.)
-        if(StringUtils.isNotEmpty(command.getManagerIdForDelegation())) {
-            Todo delegatedTodo = SerializationUtils.clone(todo);
-            Manager manager = managerOutboundService.findManagerInfo(command.getManagerIdForDelegation());
-            List<Todo> todoList = todoQueryService.findTodoListByManagerId(manager.getId());
-            // 위임받은 To-Do는 기본적으로 A0의 우선순위를 가지고 해당 순위 존재 시 하위 우선순위로 배정된다.(현재 리스트에 1을 더한 값이 todoId 값이 된다.)
-            delegatedTodo.updatePriorityAndStatusByDelegation(
-                    todoList.size() + 1,
-                    calculatePriority(todoList, delegatedTodo.getExecutionDate(),
-                            Importance.MIDDLE_HIGH), manager
-            );
+            // 담당자 위임 정보 존재 시 담당자 조회 후 위임을 진행한다.(description에 위임 정보를 기록한다.)
+            if(StringUtils.isNotEmpty(command.getManagerIdForDelegation())) {
+                Todo delegatedTodo = SerializationUtils.clone(todo);
+                Manager manager = managerOutboundService.findManagerInfo(command.getManagerIdForDelegation());
+                List<Todo> todoList = todoQueryService.findTodoListByManagerId(manager.getId());
+                // 위임받은 To-Do는 기본적으로 A0의 우선순위를 가지고 해당 순위 존재 시 하위 우선순위로 배정된다.(현재 리스트에 1을 더한 값이 todoId 값이 된다.)
+                delegatedTodo.updatePriorityAndStatusByDelegation(
+                        todoList.size() + 1,
+                        calculatePriority(todoList, delegatedTodo.getExecutionDate(), Importance.MIDDLE_HIGH),
+                        manager);
 
-            // 위임자와 위임 받은 서로에게 정보를 기록한다.
-            delegatedTodo.updateDelegationInfo("담당자" + " " + todo.getManager().getName() + "로 부터 위임받음");
-            todo.updateDelegationInfo("위임" + "(" + "담당자" + " " + manager.getName() + ")");
-            updatingTargetList.add(delegatedTodo);
-            updatingTargetList.add(todo);
-        } else {
-            todo.updateInfo(command);
-            updatingTargetList.add(todo);
+                // 위임자와 위임 받은 서로에게 정보를 기록한다.
+                delegatedTodo.updateDelegationInfo("담당자 " + todo.getManager().getName() + "로 부터 위임받음");
+                todo.updateDelegationInfo("위임(담당자 " + manager.getName() + ")");
+                updatingTargetList.add(delegatedTodo);
+                updatingTargetList.add(todo);
+            } else {
+                todo.updateInfo(command);
+                updatingTargetList.add(todo);
+            }
+            todoRepository.saveAll(updatingTargetList);
+        } catch(Exception e) {
+            log.error("To-Do 내용 변경 중 에러", e);
+            throw e;
         }
-        todoRepository.saveAll(updatingTargetList);
     }
 
     /**

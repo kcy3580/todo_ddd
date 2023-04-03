@@ -17,6 +17,7 @@ import static com.ap.common.constants.ResultCode.NO_DATA;
 @Repository
 public class TodoRepositoryImpl implements TodoRepository {
 
+    // DB 사용 없이 todoList 객체메모리에 to-do 정보를 저장한다.
     List<Todo> todoList = new ArrayList<>();
 
     @Override
